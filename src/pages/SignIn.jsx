@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
+import closedEyeIcon from "../assets/svg/closedEyeIcon.svg";
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +48,7 @@ function SignIn() {
               />
 
               <img
-                src={visibilityIcon}
+                src={!showPassword ? visibilityIcon : closedEyeIcon}
                 alt="show password"
                 className="showPassword"
                 onClick={() => {

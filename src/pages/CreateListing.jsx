@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 
 function CreateListing() {
@@ -58,8 +59,52 @@ function CreateListing() {
     };
   }, [isMounted]);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    const googleApiKey = process.env.REACT_APP_GOOGLEMAPS_API_KEY;
+
+    setLoading(true);
+
+    if (discountedPrice >= regularPrice) {
+      setLoading(false);
+      toast.error("Discounted price must be less than regular price");
+      return;
+    }
+
+    if (images.length > 6) {
+      setLoading(false);
+      toast.error(["Max 6 images"]);
+    }
+
+    let geolocation = {};
+    let locationLoc;
+
+    if (geolocationEnabled) {
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googleApiKey}`
+      );
+
+      const data = await res.json();
+
+      geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+      geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
+
+      locationLoc =
+        data.status === "ZERO_RESULTS"
+          ? undefined
+          : data.results[0]?.formatted_address;
+
+      if (locationLoc === undefined || locationLoc.includes("undefined")) {
+        setLoading(false);
+        toast.error("Please double check the address");
+      }
+    } else {
+      geolocation.lat = latitude;
+      geolocation.lng = longitude;
+      locationLoc = location;
+    }
+
+    setLoading(false);
   };
 
   const onMutate = (e) => {

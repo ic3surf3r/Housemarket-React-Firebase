@@ -6,6 +6,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -102,6 +103,13 @@ function CreateListing() {
           ? undefined
           : data.results[0]?.formatted_address;
 
+      if (locationLoc !== undefined) {
+        setFormData((prevState) => ({
+          ...prevState,
+          location: locationLoc,
+        }));
+      }
+
       if (locationLoc === undefined || locationLoc.includes("undefined")) {
         setLoading(false);
         toast.error("Please double check the address");
@@ -149,7 +157,7 @@ function CreateListing() {
       });
     };
 
-    const imgUrls = await Promise.all(
+    const imageUrls = await Promise.all(
       [...images].map((image) => storeImage(image))
     ).catch(() => {
       setLoading(false);
@@ -157,9 +165,22 @@ function CreateListing() {
       return;
     });
 
-    console.log(imgUrls);
+    const formDataCopy = {
+      ...formData,
+      imageUrls,
+      geolocation,
+      timestamp: serverTimestamp(),
+    };
+
+    delete formDataCopy.images;
+    !formDataCopy.offer && delete formDataCopy.discountedPrice;
+
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
 
     setLoading(false);
+
+    toast.success("Listing saved");
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
 
   const onMutate = (e) => {

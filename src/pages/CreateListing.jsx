@@ -103,13 +103,6 @@ function CreateListing() {
           ? undefined
           : data.results[0]?.formatted_address;
 
-      if (locationLoc !== undefined) {
-        setFormData((prevState) => ({
-          ...prevState,
-          location: locationLoc,
-        }));
-      }
-
       if (locationLoc === undefined || locationLoc.includes("undefined")) {
         setLoading(false);
         toast.error("Please double check the address");
@@ -117,7 +110,6 @@ function CreateListing() {
     } else {
       geolocation.lat = latitude;
       geolocation.lng = longitude;
-      locationLoc = location;
     }
 
     // Store image in firebase

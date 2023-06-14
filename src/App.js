@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import CreateListing from "./pages/CreateListing";
 import Listing from "./pages/Listing";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -31,6 +32,10 @@ function App() {
           <Route
             path="/category/:categoryName/:listingId"
             element={<Listing />}
+          />
+          <Route
+            path="/contact/:categoryName/:landlordId"
+            element={<Contact />}
           />
         </Routes>
         <Navbar />

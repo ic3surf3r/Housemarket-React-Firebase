@@ -395,6 +395,7 @@ button {
 .exploreCategoryName {
   font-weight: 500;
   text-align: left;
+  margin-bottom: 6rem;
 }
 
 .category {
